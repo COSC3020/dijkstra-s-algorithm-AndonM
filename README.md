@@ -20,3 +20,5 @@ to be the most efficient one!
 
 What is the big $\Theta$ complexity of your implementation? Add your
 answer, including your reasoning, to this markdown file.
+
+Beginning with the initialization step, we note that initializing the 'visited' distances arrays takes O(V) time where V represents the # of nodes in the graph. Pressing forward we see that the outer loop runs for V-1 iterations which takes O(V) time again. Of courese, for each outer loop iteration we also have a nested inner-loop that will iterate over all the nodes for another O(V) addition. Again, we have one more iteration occupying O(V) time yet again. Putting it all together we get a big $\Theta$ complexity of $((O(V) + (O(V) * (O(V)) + O(V))) = (O(V^2) + 2 O(V)) => O(V^2))$
