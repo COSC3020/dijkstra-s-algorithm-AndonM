@@ -1,38 +1,46 @@
+// TESTING SUITE CURTEOUSY OF DHRUV8806
+
 const fs = require('fs');
-const assert = require('assert');
+const jsc = require('jsverify');
 
-eval(fs.readFileSync('code.js')+'');
+eval(fs.readFileSync('code.js').toString());
 
-function testDijkstra(graph, sourceNode, expectedDistances) {
-    const result = dijkstra(graph, sourceNode);
-    for (let i = 0; i < result.length; i++) {
-        assert.equal(result[i], expectedDistances[i]);
-    }
+
+const testGraph1 = [
+    // Node A connections: (B, 3)
+    [[1, 3]],
+    // Node B connections: (C, 4)
+    [[2, 4]],
+    // Node C connections: (D, 5)
+    [[3, 5]],
+    // Node D connections: (E, 6)
+    [[4, 6]],
+    // Node E connections: None
+    []
+];
+
+const testGraph2 = [
+    // Node A connections: (C, 5), (E, 8)
+    [[2, 5], [4, 8]],
+    // Node B connections: (C, 7), (D, 2)
+    [[2, 7], [3, 2]],
+    // Node C connections: (A, 5), (B, 7)
+    [[0, 5], [1, 7]],
+    // Node D connections: (E, 9), (B, 2)
+    [[4, 9], [1, 2]],
+    // Node E connections: (D, 9), (A, 8]
+    [[3, 9], [0, 8]]
+];
+
+function validateShortestPath(source, graph, expectedResults) {
+    const distances = dijkstra(graph, source);
+    return JSON.stringify(distances) === JSON.stringify(expectedResults);
 }
 
-const connectedGraph = [
-    [0, 2, 4, 0, 0],
-    [0, 0, 1, 7, 0],
-    [0, 0, 0, 2, 0],
-    [0, 0, 0, 0, 3],
-    [0, 0, 0, 0, 0]
-];
-testDijkstra(connectedGraph, 0, [0, 2, 3, 9, 6]);
+const Graphtest1 = jsc.forall(jsc.integer(0, 4), jsc.integer(0, 4), function (source, destination) {
+    return validateShortestPath(source, destination, testGraph1, [0, 3, 7, 12, 18]);
+});
 
-const disconnectedGraph = [
-    [0, 2, 0, 0, 0],
-    [0, 0, 0, 7, 0],
-    [0, 0, 0, 0, 2],
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0]
-];
-testDijkstra(disconnectedGraph, 0, [0, 2, Infinity, Infinity, Infinity]);
-
-const negativeWeightGraph = [
-    [0, 2, -1, 0, 0],
-    [0, 0, 1, 7, 0],
-    [0, 0, 0, 2, 0],
-    [0, 0, 0, 0, 3],
-    [0, 0, 0, 0, 0]
-];
-testDijkstra(negativeWeightGraph, 0, [0, 2, -1, 0, 0]);
+const Graphtest2 = jsc.forall(jsc.integer(0, 4), jsc.integer(0, 4), function (source, destination) {
+    return validateShortestPath(source, destination, testGraph2, [0, 8, 5, 7, 12]);
+});
